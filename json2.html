@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>JSON Song List</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    </head>
+
+    <style>
+
+        body {
+                background-color: #F5DCE0;
+                font-family: Rockwell;
+        }        
+
+        h2 {
+                padding-bottom: 2px;
+        }
+
+        p {
+                text-align: center;
+                padding-bottom: 2px;
+        }
+
+    </style>
+    <body>
+
+        <script language="javascript">
+
+                var entire_list;
+
+                $(document).ready(function() {
+                        $.get("https://ashleyjeon.github.io/json_songlist/songlist.json", function (data) {
+                                str = JSON.stringify(data);
+                                entire_list = data;
+                                $('#unformatted_list').html(str);
+                        
+                                strHTML= "<ul>";
+                                data.forEach(function(songs) {
+                                        strHTML += "<li>";
+                                        strHTML += songs.title + "</br>" 
+                                                + "Artist(s): " + print_artists(songs.artists) + "</br>" 
+                                                + "Genre(s): " + print_artists(songs.genres) +  "</br>"
+                                                + "Year released: " + songs.year + "</br>" + "</br>";
+                                        strHTML += "</li> "
+                                });
+                                strHTML += "</ul>"
+                                $('#formatted_list').html(strHTML);
+                        });
+                });
+
+                function print_artists(list) 
+                {
+                        var collab_artists = "";
+
+                        for (var i = 0; i < list.length; i++) {
+                                if (i === 0) {
+                                        collab_artists = list[i];
+                                } else {
+                                        collab_artists = collab_artists + ", " + list[i];
+                                }
+                        }
+                        return collab_artists;
+                }
+
+                function filter_button()
+                {
+                        var selected_genre = document.getElementById("songGenres").value;
+                        console.log(selected_genre);
+
+                        $('#genreList').html("");
+                
+                        for (var i = 0; i < entire_list.length; i++) {
+                                var curr_artist = entire_list[i];
+                                var curr_artist_genre = curr_artist.genres;
+
+                                if (compare_genres(curr_artist_genre, selected_genre)) {
+                                        $('#genreList').append(curr_artist.title);
+                                        $('#genreList').append("</br>");
+                                };
+                        }
+                }
+
+                function compare_genres(curr_artist_genre, selected_genre) 
+                {
+                        for (var i = 0; i < curr_artist_genre.length; i++) {
+                                if (selected_genre === curr_artist_genre[i]) {
+                                        return true;
+                                }
+                        }
+                      
+                        return false;
+                }
+
+        </script>
+
+
+        <h1>JSON Song List</h1>
+
+        <h2>Part 2</h2>
+        <div id="unformatted_list"></div>
+        </br>
+
+        <h2>Part 3</h2>
+        <div id="formatted_list"></div>
+
+        <h2>Part 4</h2>
+        <form>
+                <div id="filter">
+                        <select id="songGenres">
+                                <option>R&B/Soul</option>
+                                <option>Alternative/Indie</option>
+                                <option>Hip-Hop</option>
+                                <option>Rap</option>
+                                <option>Pop</option>
+                                <option>Country</option>
+                                <option>Indie Rock</option>
+                                <option>Synth-Pop</option>
+                                <option>Contemporary R&B</option>
+                                <option>Electronic Rock</option>
+                        </select>
+                        <input id="filtering" type="button" value="Filter" onclick="filter_button()"></input>
+                </div>
+        </form>
+        <p>Songs of this genre:</p>
+        <p id="genreList"></p>       
+    </body>
+</html>
